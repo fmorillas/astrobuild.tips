@@ -1,0 +1,72 @@
+---
+import FileInfo from '@components/FileInfo.astro'
+import Programs from '@components/Programs.astro'
+import SectionTitle from '@components/SectionTitle.astro'
+import TeacherInfo from '@components/TeacherInfo.astro'
+import Timeline from '@components/Timeline.astro'
+import ArrowLeft from '@icons/ArrowLeft.astro'
+import Layout from '@layouts/Layout.astro'
+
+const { id } = Astro.params
+
+const url = import.meta.env.PUBLIC_API_PATH + '/ofertes_ir_pub.mc?id=' + id
+const resp = await fetch(url)
+const data = await resp.arrayBuffer()
+const decoder = new TextDecoder('iso-8859-1')
+const { dades } = JSON.parse(decoder.decode(data))
+const detail = dades[0]
+const degrees = detail.degree?.split('\n')
+const fileBasePath = new URL(import.meta.env.PUBLIC_API_PATH)
+---
+
+<Layout title={detail.titol}>
+  <main class='flex flex-col gap-8 dark:text-gray-400'>
+    <h1
+      class='flex flex-col mt-4 sm:flex-row sm:text-center sm:items-center text-lg sm:text-3xl font-bold text-ir-upc'
+    >
+      <a href='javascript:history.back()'>
+        <ArrowLeft />
+      </a>
+      <div>
+        {detail.titol}
+      </div>
+    </h1>
+    <div class='flex flex-col sm:flex-row sm:justify-between gap-4'>
+      <section>
+        <TeacherInfo
+          name={detail.prof}
+          email={detail.email}
+          dept={detail.dep}
+        />
+      </section>
+      <section class='sm:text-right'>
+        <div class='font-bold text-ir-upc'>
+          {`${detail.curs}/${detail.quad}`}
+        </div>
+        <Timeline
+          from={detail.data_pub}
+          to={detail.data_cad}
+        />
+      </section>
+    </div>
+    {
+      detail.f_enllac && (
+        <div class='sm:self-end'>
+          <FileInfo
+            link={`${fileBasePath.origin}${detail.f_enllac}`}
+            name={detail.f_nom}
+          />
+        </div>
+      )
+    }
+    <section>
+      <SectionTitle title='Description' />
+      <p>{detail.desc}</p>
+    </section>
+
+    <section>
+      <SectionTitle title='Degrees' />
+      <Programs degrees={degrees} />
+    </section>
+  </main>
+</Layout>

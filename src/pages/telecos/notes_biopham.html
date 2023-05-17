@@ -1,0 +1,31 @@
+<%args>
+  $curs => undef
+</%args>
+<div class="contingut">
+<form method="post">
+<table class="dades">
+<tr class="titol_contingut">
+<td colspan="2">Llistat de notes de BIOPHAM</td>
+</tr>
+<tr class="blau2">
+<td >
+<b>Selecciona el curs d'inici</b><br><br>
+<select name="curs">
+% foreach(0,1,2,3,4,5) {
+%   my $any_act = (any_academic() - $_);
+    <option value="<% $any_act %>" <% $curs == $any_act ? 'selected' : '' %>>Curs <% $any_act.'-'.($any_act+1) %></option>
+% }
+</select>
+<br><br>  
+</td>
+</tr>
+<tr class="blau2">
+  <td colspan="2">
+    <p style="text-align: right;">
+      <input class="botons" type="submit" formaction="xls/notes_biopham.html" name="xls" value="Generar XLS">
+    </p>
+  </td>
+  </tr>
+</table>
+</form>
+</div>
